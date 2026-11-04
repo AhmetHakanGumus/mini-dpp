@@ -23,6 +23,8 @@ var connectionString = builder.Configuration.GetConnectionString("Dpp")
 builder.Services.AddDbContext<DppDbContext>(options => options.UseSqlite(connectionString));
 builder.Services.AddScoped<ProductImportService>();
 builder.Services.AddScoped<PassportService>();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -30,6 +32,11 @@ using (var scope = app.Services.CreateScope())
 {
     scope.ServiceProvider.GetRequiredService<DppDbContext>().Database.Migrate();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.MapControllers();
 

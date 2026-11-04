@@ -1,0 +1,124 @@
+:root {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: #1c2b28;
+  background: #f4f6f5;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 760px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1f6f5c;
+}
+
+h1 {
+  margin: 0.25rem 0 1.5rem;
+}
+
+h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+section {
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+button {
+  padding: 0.5rem 1.25rem;
+  border: 0;
+  border-radius: 8px;
+  background: #1f6f5c;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #9db3ad;
+  cursor: not-allowed;
+}
+
+table {
+  width: 100%;
+  margin-top: 1rem;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #e2e7e5;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  font-size: 0.85rem;
+  color: #5b6b67;
+}
+
+a {
+  color: #1f6f5c;
+}
+
+.muted {
+  color: #5b6b67;
+  font-size: 0.9rem;
+}
+
+.danger {
+  color: #b3261e;
+}
+
+.alert {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #fbeaea;
+  color: #b3261e;
+}
+
+.products {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.products li {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  font-size: 0.9rem;
+}
