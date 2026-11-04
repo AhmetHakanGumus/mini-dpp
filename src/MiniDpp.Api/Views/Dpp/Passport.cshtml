@@ -1,0 +1,77 @@
+@using System.Globalization
+@model MiniDpp.Api.Controllers.PassportPage
+@{
+    Layout = null;
+    var passport = Model.Passport;
+    static string Number(decimal value) => value.ToString(CultureInfo.InvariantCulture);
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@passport.ModelName | Dijital Ürün Pasaportu</title>
+    <link rel="alternate" type="application/ld+json" href="@Model.JsonLdUrl">
+    <script type="application/ld+json">@Html.Raw(Model.JsonLd)</script>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 0; background: #f4f6f5; color: #1c2b28; line-height: 1.5; }
+        main { max-width: 640px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgb(0 0 0 / 12%); }
+        .eyebrow { margin: 0; font-size: .85rem; color: #1f6f5c; font-weight: 600; }
+        h1 { margin: .25rem 0 1.5rem; }
+        h2 { margin: 2rem 0 .5rem; font-size: 1.05rem; }
+        dl { display: grid; grid-template-columns: 9rem 1fr; gap: .4rem 1rem; margin: 0; }
+        dt { color: #5b6b67; }
+        dd { margin: 0; overflow-wrap: anywhere; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: .5rem; border-bottom: 1px solid #e2e7e5; text-align: left; }
+        th { font-size: .85rem; color: #5b6b67; }
+        footer { margin-top: 2rem; font-size: .9rem; }
+    </style>
+</head>
+<body>
+<main>
+    <p class="eyebrow">Dijital Ürün Pasaportu</p>
+    <h1>@passport.ModelName</h1>
+
+    <dl>
+        <dt>GTIN</dt>
+        <dd>@passport.Gtin</dd>
+        <dt>Pamuk</dt>
+        <dd>%@Number(passport.CottonPercent)</dd>
+        <dt>Elastan</dt>
+        <dd>%@Number(passport.ElastanePercent)</dd>
+    </dl>
+
+    <h2>Üretim partileri</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Batch numarası</th>
+            <th>Üretim yeri</th>
+            @if (passport.ShowsCarbon)
+            {
+                <th>Karbon (kg CO₂e)</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var batch in passport.Batches)
+        {
+            <tr>
+                <td>@batch.BatchNo</td>
+                <td>@batch.ProductionPlace</td>
+                @if (batch.CarbonKgCo2e is { } carbon)
+                {
+                    <td>@Number(carbon)</td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <footer>
+        <a href="@Model.JsonLdUrl">JSON-LD çıktısı</a>
+    </footer>
+</main>
+</body>
+</html>
