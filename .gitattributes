@@ -1,0 +1,3 @@
+* text=auto
+# CSV bayt bayt korunur: GTIN ve satir sonlari degismesin.
+*.csv -text

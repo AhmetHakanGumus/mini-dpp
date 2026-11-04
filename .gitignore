@@ -1,0 +1,10 @@
+bin/
+obj/
+node_modules/
+*.db
+*.db-shm
+*.db-wal
+*.user
+.vs/
+.vscode/
+TestResults/
