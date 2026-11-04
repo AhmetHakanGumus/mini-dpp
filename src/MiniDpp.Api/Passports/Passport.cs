@@ -10,6 +10,17 @@ public sealed record Passport(
     decimal CottonPercent,
     decimal ElastanePercent,
     IReadOnlyList<PassportBatch> Batches,
+    int Version,
+    DateTime UpdatedAt,
+    IReadOnlyList<PassportVersion> PreviousVersions,
     bool ShowsCarbon);
 
 public sealed record PassportBatch(string BatchNo, string ProductionPlace, decimal? CarbonKgCo2e);
+
+public sealed record PassportVersion(
+    int VersionNumber,
+    DateTime UpdatedAt,
+    string ModelName,
+    decimal CottonPercent,
+    decimal ElastanePercent,
+    IReadOnlyList<PassportBatch> Batches);

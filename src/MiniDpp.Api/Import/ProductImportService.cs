@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using MiniDpp.Api.Data;
 using MiniDpp.Api.Validation;
@@ -94,6 +95,7 @@ public class ProductImportService(DppDbContext db)
                 Name = row.ModelName,
                 CottonPercent = row.CottonPercent,
                 ElastanePercent = row.ElastanePercent,
+                UpdatedAt = DateTime.UtcNow,
                 Batches = [ToBatch(row)],
             };
             db.ProductModels.Add(model);
@@ -106,6 +108,17 @@ public class ProductImportService(DppDbContext db)
         {
             return SavedRowStatus.Unchanged;
         }
+
+        // Önceki hal, alanlar değişmeden önce kopyalanmalı.
+        var now = DateTime.UtcNow;
+        model.PreviousVersions.Add(new ProductVersion
+        {
+            VersionNumber = model.Version,
+            UpdatedAt = now,
+            SnapshotJson = JsonSerializer.Serialize(ToSnapshot(model)),
+        });
+        model.Version++;
+        model.UpdatedAt = now;
 
         model.Name = row.ModelName;
         model.CottonPercent = row.CottonPercent;
@@ -131,6 +144,15 @@ public class ProductImportService(DppDbContext db)
         || model.ElastanePercent != row.ElastanePercent
         || batch.ProductionPlace != row.ProductionPlace
         || batch.CarbonKgCo2e != row.CarbonKgCo2e;
+
+    private static ProductSnapshot ToSnapshot(ProductModel model) => new(
+        model.Name,
+        model.CottonPercent,
+        model.ElastanePercent,
+        model.Batches
+            .OrderBy(b => b.Id)
+            .Select(b => new BatchSnapshot(b.BatchNo, b.ProductionPlace, b.CarbonKgCo2e))
+            .ToList());
 
     private static Batch ToBatch(ValidProductRow row) => new()
     {

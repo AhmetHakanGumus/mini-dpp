@@ -21,11 +21,18 @@ public static class PassportJsonLd
     {
         var additionalProperties = new JsonArray(
             Property("elyaf_pamuk_yuzde", "Pamuk oranı", JsonValue.Create(passport.CottonPercent), "%"),
-            Property("elyaf_elastan_yuzde", "Elastan oranı", JsonValue.Create(passport.ElastanePercent), "%"));
+            Property("elyaf_elastan_yuzde", "Elastan oranı", JsonValue.Create(passport.ElastanePercent), "%"),
+            Property("surum", "Sürüm", JsonValue.Create(passport.Version)),
+            Property("guncelleme_tarihi", "Son güncelleme", FormatDate(passport.UpdatedAt)));
 
         foreach (var batch in passport.Batches)
         {
             additionalProperties.Add(BatchProperty(batch));
+        }
+
+        foreach (var version in passport.PreviousVersions)
+        {
+            additionalProperties.Add(VersionProperty(version));
         }
 
         var product = new JsonObject
@@ -36,18 +43,37 @@ public static class PassportJsonLd
             ["url"] = pageUrl,
             ["name"] = passport.ModelName,
             ["gtin14"] = passport.Gtin,
-            ["material"] = Material(passport),
+            ["material"] = Material(passport.CottonPercent, passport.ElastanePercent),
             ["additionalProperty"] = additionalProperties,
         };
 
         return product.ToJsonString(Options);
     }
 
-    private static string Material(Passport passport)
+    private static string Material(decimal cottonPercent, decimal elastanePercent)
     {
-        var cotton = passport.CottonPercent.ToString(CultureInfo.InvariantCulture);
-        var elastane = passport.ElastanePercent.ToString(CultureInfo.InvariantCulture);
+        var cotton = cottonPercent.ToString(CultureInfo.InvariantCulture);
+        var elastane = elastanePercent.ToString(CultureInfo.InvariantCulture);
         return $"%{cotton} pamuk, %{elastane} elastan";
+    }
+
+    private static string FormatDate(DateTime value) =>
+        value.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture);
+
+    private static JsonObject VersionProperty(PassportVersion version)
+    {
+        var details = new JsonArray(
+            Property("guncelleme_tarihi", "Güncelleme tarihi", FormatDate(version.UpdatedAt)),
+            Property("model_adi", "Model adı", version.ModelName),
+            Property("material", "Malzeme", Material(version.CottonPercent, version.ElastanePercent)));
+        foreach (var batch in version.Batches)
+        {
+            details.Add(BatchProperty(batch));
+        }
+
+        var property = Property("onceki_surum", "Önceki sürüm", JsonValue.Create(version.VersionNumber));
+        property["valueReference"] = details;
+        return property;
     }
 
     private static JsonObject BatchProperty(PassportBatch batch)
