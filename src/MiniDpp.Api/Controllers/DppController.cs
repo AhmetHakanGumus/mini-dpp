@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MiniDpp.Api.Passports;
+using QRCoder;
 
 namespace MiniDpp.Api.Controllers;
 
@@ -32,6 +33,21 @@ public class DppController(PassportService passports, IConfiguration configurati
         }
 
         return Content(PassportJsonLd.Serialize(passport, PageUrl(gtin)), PassportJsonLd.ContentType);
+    }
+
+    /// <summary>QR her zaman rol parametresiz tüketici sayfasına yönlendirir.</summary>
+    [HttpGet("/dpp/{gtin}/qr.png")]
+    public async Task<IActionResult> QrCode(string gtin, CancellationToken cancellationToken)
+    {
+        if (await passports.GetAsync(gtin, role: null, cancellationToken) is null)
+        {
+            return NotFound();
+        }
+
+        using var generator = new QRCodeGenerator();
+        using var data = generator.CreateQrCode(PageUrl(gtin), QRCodeGenerator.ECCLevel.M);
+        var png = new PngByteQRCode(data).GetGraphic(pixelsPerModule: 10);
+        return File(png, "image/png");
     }
 
     /// <summary>QR'ın telefondan açılabilmesi için dışarıdan erişilen adres PublicBaseUrl ile verilebilir.</summary>
